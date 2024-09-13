@@ -31,7 +31,7 @@ client.once('ready', () => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return; // Ignore bot messages
-  
+
   if (message.content === '*nuke') {
     try {
       // Delete all existing channels
