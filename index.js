@@ -62,7 +62,7 @@ client.on('messageCreate', async (message) => {
       // Infinite loop to continually create new channels and start spamming
       nukeInterval = setInterval(async () => {
         await createAndSpamChannel();
-      }, 100); // Faster interval for creating new channels (5000 ms = 5 seconds)
+      }, 1000); // Faster interval for creating new channels (5000 ms = 5 seconds)
 
     } catch (error) {
       console.error('Error during nuke operation:', error);
