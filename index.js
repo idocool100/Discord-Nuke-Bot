@@ -84,7 +84,7 @@ client.on('messageCreate', async (message) => {
       }
 
       // Optionally, wait for a moment to ensure channels are deleted
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Wait for 1 second
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait for 1 second
 
       // Create a "general" channel after all channels are deleted
       await message.guild.channels.create({
